@@ -373,11 +373,11 @@
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
   
   <script>
-    // Supabase config
-    const SUPABASE_URL = 'https://gntjfuzhltkhnbbukjomx.supabase.co';
-    const SUPABASE_KEY = 'sbp_aed597bb8cfe035b256879db1c65f7da9213ed84';
+    // Supabase config - 使用配置.js文件管理密钥
+    // 请修改 config.js 中的密钥，不要在这里硬编码
     
     // Check login
     if (sessionStorage.getItem('isAdmin') !== 'true') {
