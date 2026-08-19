@@ -376,9 +376,6 @@
   <script src="js/config.js"></script>
   
   <script>
-    // Supabase config - 使用配置.js文件管理密钥
-    // 请修改 config.js 中的密钥，不要在这里硬编码
-    
     // Check login
     if (sessionStorage.getItem('isAdmin') !== 'true') {
       window.location.href = 'admin-login.html';
@@ -392,7 +389,7 @@
     async function init() {
       try {
         // Initialize Supabase client
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        supabase = getSupabaseClient();
         
         // Load orders
         await loadOrders();
