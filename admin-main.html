@@ -102,26 +102,25 @@
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     
     .menu-btn:active {
-      transform: scale(0.96);
-      background: #FFF5F5;
+      transform: scale(0.95);
     }
     
     .menu-icon {
-      font-size: 28px;
+      font-size: 24px;
     }
     
-    .menu-label {
+    .menu-text {
       font-size: 12px;
       color: #333;
       font-weight: 600;
     }
     
-    /* Panel overlay */
+    /* Panel */
     .panel-overlay {
       position: fixed;
       top: 0;
@@ -129,100 +128,50 @@
       right: 0;
       bottom: 0;
       background: rgba(0,0,0,0.5);
-      z-index: 100;
+      z-index: 1000;
       display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      align-items: flex-end;
     }
     
     .panel-overlay.active {
       display: flex;
     }
     
-    .panel-content {
+    .panel {
       background: white;
-      border-radius: 16px;
       width: 100%;
-      max-width: 400px;
       max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
     
     .panel-header {
-      padding: 16px;
-      border-bottom: 1px solid #F0F0F0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
     }
     
     .panel-title {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
-      color: #333;
     }
     
     .panel-close {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: none;
-      background: #F5F5F5;
+      font-size: 24px;
+      color: #999;
       cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 4px;
     }
     
-    .panel-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
-    
-    /* Form styles */
-    .form-group {
-      margin-bottom: 14px;
-    }
-    
-    .form-label {
-      display: block;
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 6px;
-    }
-    
-    .form-input {
-      width: 100%;
-      height: 40px;
-      padding: 0 12px;
-      border: 1.5px solid #E0E0E0;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    
-    .form-input:focus {
-      outline: none;
-      border-color: #E53935;
-    }
-    
-    .save-btn {
-      width: 100%;
-      height: 44px;
-      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    /* Table styles */
+    /* Table */
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -231,14 +180,14 @@
     
     .data-table th {
       background: #F5F5F5;
-      padding: 10px 8px;
+      padding: 10px 6px;
       text-align: left;
       font-weight: 600;
       color: #666;
     }
     
     .data-table td {
-      padding: 10px 8px;
+      padding: 10px 6px;
       border-bottom: 1px solid #F0F0F0;
     }
     
@@ -246,22 +195,31 @@
       border-bottom: none;
     }
     
-    .data-table tr:hover td {
-      background: #FFF5F5;
-    }
-    
+    /* Tags */
     .tag {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
     }
     
-    .tag-processing { background: #FFF3E0; color: #E65100; }
-    .tag-completed { background: #E8F5E9; color: #2E7D32; }
-    .tag-failed { background: #FFEBEE; color: #C62828; }
+    .tag-processing { background: #FFF3E0; color: #F57C00; }
+    .tag-completed { background: #E8F5E9; color: #4CAF50; }
+    .tag-failed { background: #FFEBEE; color: #E53935; }
     
+    /* Buttons */
+    .view-proof-btn {
+      background: #E53935;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    
+    /* Empty state */
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -269,117 +227,68 @@
     }
     
     .empty-state .icon {
-      font-size: 40px;
+      font-size: 48px;
       margin-bottom: 12px;
     }
     
+    /* Search */
     .search-bar {
       margin-bottom: 12px;
     }
     
     .search-bar input {
       width: 100%;
-      height: 36px;
-      padding: 0 12px;
-      border: 1.5px solid #E0E0E0;
+      padding: 10px 14px;
+      border: 1px solid #E0E0E0;
       border-radius: 8px;
-      font-size: 13px;
-    }
-    
-    .search-bar input:focus {
-      outline: none;
-      border-color: #E53935;
+      font-size: 14px;
     }
     
     /* Footer */
     .admin-footer {
       text-align: center;
-      padding: 10px 16px;
+      padding: 10px;
       font-size: 10px;
-      color: #bbb;
-      background: white;
-      border-top: 1px solid #F0F0F0;
+      color: #999;
       flex-shrink: 0;
     }
     
     .admin-footer a {
-      color: #999;
+      color: #666;
       text-decoration: none;
     }
     
     /* Toast */
     .toast {
       position: fixed;
-      top: 50%;
+      top: 20px;
       left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.85);
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
       color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
+      padding: 10px 20px;
+      border-radius: 20px;
       font-size: 14px;
-      z-index: 9999;
+      z-index: 2000;
       display: none;
     }
     
-    /* Proof image viewer */
-    .proof-container {
-      background: white;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
     }
     
-    .proof-header {
-      padding: 16px;
-      border-bottom: 1px solid #F0F0F0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s infinite;
     }
     
-    .proof-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #333;
-    }
-    
-    .proof-image {
-      width: 100%;
-      flex: 1;
-      object-fit: contain;
-      background: #f5f5f5;
-    }
-    
-    .proof-actions {
-      padding: 16px;
-      border-top: 1px solid #F0F0F0;
-    }
-    
-    .proof-btn {
-      width: 100%;
-      height: 44px;
-      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    .view-proof-btn {
-      padding: 4px 10px;
-      background: #FFF5F5;
-      border: 1px solid #E53935;
-      border-radius: 6px;
-      color: #E53935;
-      font-size: 11px;
-      cursor: pointer;
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
     }
   </style>
 </head>
@@ -395,20 +304,20 @@
     <!-- Stats -->
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-value" id="statOrders">0</div>
+        <div class="stat-value" id="statOrders">-</div>
         <div class="stat-label">总订单</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="statSales">¥0</div>
-        <div class="stat-label">销售额</div>
+        <div class="stat-value" id="statSales">-</div>
+        <div class="stat-label">总销售额</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="statUsers">0</div>
-        <div class="stat-label">用户</div>
+        <div class="stat-value" id="statUsers">-</div>
+        <div class="stat-label">用户数</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="statRate">0%</div>
-        <div class="stat-label">成功率</div>
+        <div class="stat-value" id="statRate">-</div>
+        <div class="stat-label">完成率</div>
       </div>
     </div>
     
@@ -416,53 +325,16 @@
     <div class="menu-grid">
       <button class="menu-btn" onclick="showOrders()">
         <span class="menu-icon">📋</span>
-        <span class="menu-label">订单管理</span>
+        <span class="menu-text">订单管理</span>
       </button>
       <button class="menu-btn" onclick="showCoupons()">
         <span class="menu-icon">🎫</span>
-        <span class="menu-label">优惠券</span>
-      </button>
-      <button class="menu-btn" onclick="window.location.href='customer-chat.html'">
-        <span class="menu-icon">💬</span>
-        <span class="menu-label">在线客服</span>
+        <span class="menu-text">优惠券</span>
       </button>
       <button class="menu-btn" onclick="showSettings()">
         <span class="menu-icon">⚙️</span>
-        <span class="menu-label">系统设置</span>
+        <span class="menu-text">系统设置</span>
       </button>
-      <button class="menu-btn" onclick="showQRCode()">
-        <span class="menu-icon">📱</span>
-        <span class="menu-label">收款码</span>
-      </button>
-      <button class="menu-btn" onclick="showService()">
-        <span class="menu-icon">🎧</span>
-        <span class="menu-label">客服设置</span>
-      </button>
-    </div>
-  </div>
-  
-  <!-- Panel overlay -->
-  <div class="panel-overlay" id="panelOverlay" onclick="closePanel(event)">
-    <div class="panel-content" onclick="event.stopPropagation()">
-      <div class="panel-header">
-        <div class="panel-title" id="panelTitle">管理</div>
-        <button class="panel-close" onclick="closePanel()">✕</button>
-      </div>
-      <div class="panel-body" id="panelBody"></div>
-    </div>
-  </div>
-  
-  <!-- Payment proof overlay -->
-  <div class="panel-overlay" id="proofOverlay" onclick="closeProof(event)">
-    <div class="proof-container">
-      <div class="proof-header">
-        <span class="proof-title">📸 支付凭证</span>
-        <button class="panel-close" onclick="closeProof()">✕</button>
-      </div>
-      <img id="proofImage" src="" alt="支付凭证" class="proof-image">
-      <div class="proof-actions">
-        <button class="proof-btn" onclick="downloadProof()">💾 保存凭证</button>
-      </div>
     </div>
   </div>
   
@@ -472,48 +344,126 @@
     <p>主办单位：中石化易捷销售有限公司 | 地址：北京市朝阳区朝阳门北大街22号</p>
   </div>
   
+  <!-- Order Panel -->
+  <div class="panel-overlay" id="orderOverlay" onclick="closePanel(event, 'orderOverlay')">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title" id="panelTitle">📋 订单管理</span>
+        <span class="panel-close" onclick="closePanel()">&times;</span>
+      </div>
+      <div id="panelBody">
+        <div class="loading">加载中</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Proof Overlay -->
+  <div class="panel-overlay" id="proofOverlay" onclick="closeProof(event)">
+    <div class="panel" style="max-height: 60vh;">
+      <div class="panel-header">
+        <span class="panel-title">支付凭证</span>
+        <span class="panel-close" onclick="closeProof()">&times;</span>
+      </div>
+      <img id="proofImage" src="" style="width: 100%; border-radius: 8px;">
+    </div>
+  </div>
+  
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <script>
+    // Supabase config
+    const SUPABASE_URL = 'https://gntjfuzhltkhnbbukjomx.supabase.co';
+    const SUPABASE_KEY = 'sbp_aed597bb8cfe035b256879db1c65f7da9213ed84';
+    
     // Check login
     if (sessionStorage.getItem('isAdmin') !== 'true') {
       window.location.href = 'admin-login.html';
     }
     
+    let supabase;
     let ordersData = [];
     let couponsData = [];
     
-    // Toast
-    function showToast(msg, type = 'info') {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      if (type === 'error') toast.style.background = 'rgba(229, 57, 53, 0.9)';
-      else if (type === 'success') toast.style.background = 'rgba(76, 175, 80, 0.9)';
-      else toast.style.background = 'rgba(0,0,0,0.85)';
-      setTimeout(() => { toast.style.display = 'none'; }, 2000);
-    }
-    
-    // Logout
-    function handleLogout() {
-      if (confirm('确定要退出登录吗？')) {
-        sessionStorage.removeItem('isAdmin');
-        window.location.href = 'admin-login.html';
+    // Initialize
+    async function init() {
+      try {
+        // Initialize Supabase client
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Load orders
+        await loadOrders();
+        
+        // Load coupons
+        await loadCoupons();
+        
+        // Update stats
+        updateStats();
+      } catch (error) {
+        console.error('Init error:', error);
+        showToast('加载失败，请刷新重试', 'error');
       }
     }
     
+    // Load orders from Supabase
+    async function loadOrders() {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Load orders error:', error);
+        return;
+      }
+      
+      ordersData = data || [];
+    }
+    
+    // Load coupons from Supabase
+    async function loadCoupons() {
+      const { data, error } = await supabase
+        .from('vouchers')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Load coupons error:', error);
+        return;
+      }
+      
+      couponsData = data || [];
+    }
+    
+    // Update stats
+    function updateStats() {
+      document.getElementById('statOrders').textContent = ordersData.length;
+      
+      const totalSales = ordersData.reduce((sum, o) => sum + parseFloat(o.pay_amount || 0), 0);
+      document.getElementById('statSales').textContent = '¥' + totalSales.toFixed(0);
+      
+      const uniqueUsers = new Set(ordersData.map(o => o.phone)).size;
+      document.getElementById('statUsers').textContent = uniqueUsers;
+      
+      const completed = ordersData.filter(o => o.status === 'completed').length;
+      const rate = ordersData.length > 0 ? Math.round((completed / ordersData.length) * 100) : 0;
+      document.getElementById('statRate').textContent = rate + '%';
+    }
+    
     // Show orders
-    function showOrders() {
-      document.getElementById('panelTitle').textContent = '📋 订单管理';
+    async function showOrders() {
+      await loadOrders();
+      
+      document.getElementById('panelTitle').textContent = '📋 订单管理 (' + ordersData.length + ')';
       const body = document.getElementById('panelBody');
       
       if (ordersData.length === 0) {
         body.innerHTML = '<div class="empty-state"><div class="icon">📭</div><div>暂无订单数据</div></div>';
       } else {
         body.innerHTML = `
-          <div class="search-bar">
-            <input type="text" placeholder="搜索订单..." oninput="filterOrders(this.value)">
-          </div>
           <table class="data-table">
             <thead>
               <tr>
@@ -524,15 +474,15 @@
                 <th>状态</th>
               </tr>
             </thead>
-            <tbody id="ordersTableBody">
+            <tbody>
               ${ordersData.map(o => `
                 <tr>
                   <td style="font-size:11px;">${o.order_no}</td>
                   <td>${maskPhone(o.phone)}</td>
                   <td>¥${o.pay_amount}</td>
                   <td>
-                    ${o.payment_proof ? 
-                      `<button class="view-proof-btn" onclick="viewProof('${o.id}')">查看</button>` : 
+                    ${o.screenshot ? 
+                      `<button class="view-proof-btn" onclick="viewProof('${o.screenshot}')">查看</button>` : 
                       '<span style="color:#ccc;">-</span>'}
                   </td>
                   <td><span class="tag tag-${o.status}">${getStatusText(o.status)}</span></td>
@@ -543,31 +493,25 @@
         `;
       }
       
-      document.getElementById('panelOverlay').classList.add('active');
+      document.getElementById('orderOverlay').classList.add('active');
     }
     
-    // View payment proof
-    function viewProof(orderId) {
-      const order = ordersData.find(o => o.id === orderId);
-      if (!order || !order.payment_proof) {
-        showToast('暂无支付凭证', 'error');
-        return;
-      }
-      
-      // 创建图片查看弹窗
-      const overlay = document.getElementById('proofOverlay');
+    // View proof
+    function viewProof(src) {
       const img = document.getElementById('proofImage');
-      img.src = order.payment_proof;
-      overlay.classList.add('active');
+      img.src = src;
+      document.getElementById('proofOverlay').classList.add('active');
     }
     
     // Show coupons
-    function showCoupons() {
-      document.getElementById('panelTitle').textContent = '🎫 优惠券管理';
+    async function showCoupons() {
+      await loadCoupons();
+      
+      document.getElementById('panelTitle').textContent = '🎫 优惠券管理 (' + couponsData.length + ')';
       const body = document.getElementById('panelBody');
       
       if (couponsData.length === 0) {
-        body.innerHTML = '<div class="empty-state"><div class="icon">🎫</div><div>暂无优惠券数据</div></div>';
+        body.innerHTML = '<div class="empty-state"><div class="icon">🎫</div><div>暂无优惠券</div></div>';
       } else {
         body.innerHTML = `
           <table class="data-table">
@@ -580,12 +524,12 @@
               </tr>
             </thead>
             <tbody>
-              ${couponsData.map(c => `
+              ${couponsData.map(v => `
                 <tr>
-                  <td style="font-size:11px;">${c.code}</td>
-                  <td>${maskPhone(c.phone)}</td>
-                  <td>¥${c.amount}</td>
-                  <td><span class="tag tag-${c.status}">${getStatusText(c.status)}</span></td>
+                  <td style="font-size:11px;">${v.voucher_code}</td>
+                  <td>${maskPhone(v.phone)}</td>
+                  <td>¥${v.amount}</td>
+                  <td><span class="tag tag-${v.status === 'active' ? 'completed' : 'failed'}">${v.status === 'active' ? '有效' : '已用'}</span></td>
                 </tr>
               `).join('')}
             </tbody>
@@ -593,155 +537,63 @@
         `;
       }
       
-      document.getElementById('panelOverlay').classList.add('active');
+      document.getElementById('orderOverlay').classList.add('active');
     }
     
     // Show settings
-    function showSettings() {
+    async function showSettings() {
       document.getElementById('panelTitle').textContent = '⚙️ 系统设置';
       const body = document.getElementById('panelBody');
       
       body.innerHTML = `
-        <div class="form-group">
-          <label class="form-label">Banner 横幅文字</label>
-          <input type="text" class="form-input" id="bannerText" placeholder="请输入Banner文字">
+        <div style="padding: 20px 0;">
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #666; margin-bottom: 6px;">管理员密码</label>
+            <input type="password" id="adminPassword" value="admin123" style="width: 100%; padding: 10px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 14px;">
+          </div>
+          <button onclick="saveSettings()" style="width: 100%; padding: 12px; background: #E53935; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;">保存设置</button>
         </div>
-        <div class="form-group">
-          <label class="form-label">公告文字</label>
-          <input type="text" class="form-input" id="announcementText" placeholder="请输入公告文字">
-        </div>
-        <div class="form-group">
-          <label class="form-label">修改管理员密码</label>
-          <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码（留空不修改）">
-        </div>
-        <button class="save-btn" onclick="saveSettings()">💾 保存设置</button>
       `;
       
-      document.getElementById('panelOverlay').classList.add('active');
-    }
-    
-    // Show QR code
-    function showQRCode() {
-      document.getElementById('panelTitle').textContent = '📱 收款码设置';
-      const body = document.getElementById('panelBody');
-      
-      body.innerHTML = `
-        <div class="form-group">
-          <label class="form-label">微信收款码</label>
-          <input type="file" class="form-input" accept="image/*" id="wechatQrInput" onchange="previewQR(this, 'wechatQrPreview')">
-          <img id="wechatQrPreview" style="width:100%;margin-top:10px;display:none;border-radius:8px;">
-        </div>
-        <div class="form-group">
-          <label class="form-label">支付宝收款码</label>
-          <input type="file" class="form-input" accept="image/*" id="alipayQrInput" onchange="previewQR(this, 'alipayQrPreview')">
-          <img id="alipayQrPreview" style="width:100%;margin-top:10px;display:none;border-radius:8px;">
-        </div>
-        <button class="save-btn" onclick="saveQRCode()">💾 保存收款码</button>
-      `;
-      
-      document.getElementById('panelOverlay').classList.add('active');
-    }
-    
-    // Show service
-    function showService() {
-      document.getElementById('panelTitle').textContent = '🎧 客服设置';
-      const body = document.getElementById('panelBody');
-      
-      body.innerHTML = `
-        <div class="form-group">
-          <label class="form-label">客服链接地址</label>
-          <input type="url" class="form-input" id="serviceUrl" placeholder="https://...">
-        </div>
-        <button class="save-btn" onclick="saveService()">💾 保存设置</button>
-      `;
-      
-      document.getElementById('panelOverlay').classList.add('active');
-    }
-    
-    // Close panel
-    function closePanel(e) {
-      if (!e || e.target === document.getElementById('panelOverlay')) {
-        document.getElementById('panelOverlay').classList.remove('active');
-      }
-    }
-    
-    // Close proof viewer
-    function closeProof(e) {
-      if (!e || e.target === document.getElementById('proofOverlay')) {
-        document.getElementById('proofOverlay').classList.remove('active');
-      }
-    }
-    
-    // Download proof
-    function downloadProof() {
-      const img = document.getElementById('proofImage');
-      const link = document.createElement('a');
-      link.href = img.src;
-      link.download = 'payment-proof-' + Date.now() + '.png';
-      link.click();
-      showToast('已保存凭证', 'success');
-    }
-    
-    // Filter orders
-    function filterOrders(keyword) {
-      const filtered = ordersData.filter(o => 
-        o.order_no.includes(keyword) || 
-        o.phone.includes(keyword) ||
-        (o.referrer_code && o.referrer_code.includes(keyword))
-      );
-      
-      const tbody = document.getElementById('ordersTableBody');
-      if (tbody) {
-        tbody.innerHTML = filtered.map(o => `
-          <tr>
-            <td style="font-size:11px;">${o.order_no}</td>
-            <td>${maskPhone(o.phone)}</td>
-            <td>¥${o.pay_amount}</td>
-            <td><span class="tag tag-${o.status}">${getStatusText(o.status)}</span></td>
-          </tr>
-        `).join('');
-      }
-    }
-    
-    // Preview QR code
-    function previewQR(input, previewId) {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const preview = document.getElementById(previewId);
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
+      document.getElementById('orderOverlay').classList.add('active');
     }
     
     // Save settings
-    function saveSettings() {
-      const banner = document.getElementById('bannerText').value.trim();
-      const announcement = document.getElementById('announcementText').value.trim();
-      const newPassword = document.getElementById('newPassword').value.trim();
+    async function saveSettings() {
+      const newPassword = document.getElementById('adminPassword').value;
       
-      // 模拟保存成功
-      showToast('保存成功', 'success');
+      const { error } = await supabase
+        .from('settings')
+        .update({ admin_password: newPassword })
+        .eq('id', 1);
+      
+      if (error) {
+        showToast('保存失败', 'error');
+        console.error('Save settings error:', error);
+        return;
+      }
+      
+      showToast('设置已保存', 'success');
       closePanel();
     }
     
-    // Save QR code
-    function saveQRCode() {
-      showToast('保存成功', 'success');
-      closePanel();
+    // Close panel
+    function closePanel(event, overlayId) {
+      if (event && event.target !== document.getElementById(overlayId)) return;
+      document.getElementById(overlayId).classList.remove('active');
     }
     
-    // Save service
-    function saveService() {
-      const url = document.getElementById('serviceUrl').value.trim();
-      if (url) {
-        showToast('保存成功', 'success');
-        closePanel();
-      } else {
-        showToast('请输入客服链接', 'error');
+    // Close proof
+    function closeProof(event) {
+      if (event && event.target !== document.getElementById('proofOverlay')) return;
+      document.getElementById('proofOverlay').classList.remove('active');
+    }
+    
+    // Logout
+    function handleLogout() {
+      if (confirm('确定要退出登录吗？')) {
+        sessionStorage.removeItem('isAdmin');
+        window.location.href = 'admin-login.html';
       }
     }
     
@@ -751,58 +603,25 @@
       return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
     }
     
-    // Helper: status text
+    // Helper: get status text
     function getStatusText(status) {
       const map = { processing: '处理中', completed: '已完成', failed: '失败' };
       return map[status] || status;
     }
     
-    // Initialize with mock data
-    function init() {
-      // 模拟订单数据（包含支付凭证）
-      ordersData = [
-        { 
-          id: '1', 
-          order_no: 'ORD20260819001', 
-          phone: '13800138000', 
-          pay_amount: 242, 
-          status: 'completed',
-          payment_proof: 'images/proof-demo.svg'
-        },
-        { 
-          id: '2', 
-          order_no: 'ORD20260819002', 
-          phone: '13900139000', 
-          pay_amount: 300, 
-          status: 'processing',
-          payment_proof: ''
-        },
-        { 
-          id: '3', 
-          order_no: 'ORD20260819003', 
-          phone: '13700137000', 
-          pay_amount: 196, 
-          status: 'failed',
-          payment_proof: 'images/proof-alipay.svg'
-        }
-      ];
-      
-      // 模拟优惠券数据
-      couponsData = [
-        { id: '1', code: 'OC-ABC123', phone: '13800138000', amount: 50, status: 'used' },
-        { id: '2', code: 'OC-DEF456', phone: '13900139000', amount: 30, status: 'active' }
-      ];
-      
-      // 更新统计
-      document.getElementById('statOrders').textContent = ordersData.length;
-      document.getElementById('statSales').textContent = '¥' + ordersData.reduce((sum, o) => sum + parseFloat(o.pay_amount), 0).toFixed(0);
-      document.getElementById('statUsers').textContent = new Set(ordersData.map(o => o.phone)).size;
-      const completed = ordersData.filter(o => o.status === 'completed').length;
-      document.getElementById('statRate').textContent = Math.round((completed / ordersData.length) * 100) + '%';
+    // Toast
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      if (type === 'error') toast.style.background = 'rgba(229, 57, 53, 0.9)';
+      else if (type === 'success') toast.style.background = 'rgba(76, 175, 80, 0.9)';
+      else toast.style.background = 'rgba(0,0,0,0.85)';
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
     }
     
-    // Page load
-    window.onload = init;
+    // Initialize on load
+    init();
   </script>
 </body>
 </html>
