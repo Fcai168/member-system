@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>后台登录 - 易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .login-logo {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .login-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+    }
+    
+    .login-subtitle {
+      font-size: 13px;
+      color: #999;
+      margin-top: 4px;
+    }
+    
+    .login-form {
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    
+    .form-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #E53935;
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+    }
+    
+    .login-btn {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+      transition: all 0.2s;
+    }
+    
+    .login-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(229, 57, 53, 0.4);
+    }
+    
+    .login-btn:disabled {
+      background: #9E9E9E;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .back-link {
+      text-align: center;
+      margin-top: 16px;
+    }
+    
+    .back-link a {
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">⛽</div>
+      <div class="login-title">后台管理登录</div>
+      <div class="login-subtitle">易捷加油管理系统</div>
+    </div>
+    
+    <div class="login-form">
+      <div class="form-group">
+        <label>用户名</label>
+        <input type="text" class="form-input" id="username" placeholder="请输入用户名" autocomplete="username" value="admin">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="password" class="form-input" id="password" placeholder="请输入密码" autocomplete="current-password" value="admin123">
+      </div>
+      <button class="login-btn" id="loginBtn" onclick="handleLogin()">登录</button>
+    </div>
+    
+    <div class="back-link">
+      <a href="yj-home.html">← 返回首页</a>
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Toast提示
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      if (type === 'error') {
+        toast.style.background = 'rgba(229, 57, 53, 0.9)';
+      } else if (type === 'success') {
+        toast.style.background = 'rgba(76, 175, 80, 0.9)';
+      } else {
+        toast.style.background = 'rgba(0,0,0,0.85)';
+      }
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+
+    // 处理登录
+    function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const btn = document.getElementById('loginBtn');
+      
+      if (!username) {
+        showToast('请输入用户名', 'error');
+        document.getElementById('username').focus();
+        return;
+      }
+      
+      if (!password) {
+        showToast('请输入密码', 'error');
+        document.getElementById('password').focus();
+        return;
+      }
+      
+      // 验证账号密码
+      if (username === 'admin' && password === 'admin123') {
+        sessionStorage.setItem('isAdmin', 'true');
+        showToast('登录成功', 'success');
+        setTimeout(() => {
+          window.location.href = 'admin-main.html';
+        }, 800);
+      } else {
+        showToast('用户名或密码错误', 'error');
+      }
+    }
+    
+    // 回车登录
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</body>
+</html>

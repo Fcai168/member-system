@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>充值中心 - 易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: #F5F5F5;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 导航栏 */
+    .yj-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+    }
+    
+    .yj-nav-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .yj-nav-home {
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+    }
+    
+    /* 内容区域 */
+    .yj-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .yj-container::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    
+    /* 卡片样式 */
+    .yj-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .yj-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .yj-card-title .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4CAF50;
+    }
+    
+    /* 输入框组 */
+    .yj-input-group {
+      margin-bottom: 12px;
+    }
+    
+    .yj-input-group label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .yj-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      transition: all 0.2s;
+    }
+    
+    .yj-input:focus {
+      outline: none;
+      border-color: #E53935;
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+    }
+    
+    .yj-input::placeholder {
+      color: #BBB;
+    }
+    
+    /* 按钮 */
+    .yj-claim-btn {
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+      transition: all 0.2s;
+    }
+    
+    .yj-claim-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(229, 57, 53, 0.4);
+    }
+    
+    .yj-claim-btn:disabled {
+      background: #9E9E9E;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .yj-next-btn {
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+    
+    .yj-next-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    }
+    
+    /* 状态指示 */
+    .yj-status {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    
+    .yj-status.pending { background: #FFF8E1; color: #F57C00; }
+    .yj-status.success { background: #E8F5E9; color: #2E7D32; }
+    .yj-status.error { background: #FFEBEE; color: #C62828; }
+    
+    .yj-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Toast */
+    .yj-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <div class="yj-nav">
+    <span class="yj-nav-title">充值中心</span>
+    <div class="yj-nav-home" onclick="location.href='yj-home.html'">首页</div>
+  </div>
+  
+  <!-- 内容区域 -->
+  <div class="yj-container">
+    <!-- 状态提示 -->
+    <div class="yj-status" id="statusIndicator">
+      <div class="yj-spinner" id="statusSpinner"></div>
+      <span id="statusText">正在查询...</span>
+    </div>
+    
+    <!-- 领取卡片 -->
+    <div class="yj-card">
+      <div class="yj-card-title">
+        <span class="dot"></span>
+        领取电子代金券
+      </div>
+      
+      <!-- 推荐人编号 -->
+      <div class="yj-input-group">
+        <label>推荐人编号（选填）</label>
+        <input type="text" class="yj-input" id="referrerCode" placeholder="请输入推荐人编号" maxlength="20">
+      </div>
+      
+      <!-- 手机号 -->
+      <div class="yj-input-group">
+        <label>手机号码 <span style="color: #E53935;">*</span></label>
+        <input type="tel" class="yj-input" id="phone" placeholder="请输入11位手机号码" maxlength="11">
+      </div>
+      
+      <!-- 领取按钮 -->
+      <button class="yj-claim-btn" id="claimBtn" onclick="claimVoucher()">
+        立即领取电子代金券
+      </button>
+      
+      <!-- 跳转按钮 -->
+      <button class="yj-next-btn" id="nextBtn" style="display: none;" onclick="goToRecharge()">
+        去充值
+      </button>
+    </div>
+    
+    <!-- 使用须知 -->
+    <div class="yj-card">
+      <div class="yj-card-title">
+        <span class="dot"></span>
+        代金券使用须知
+      </div>
+      <div style="font-size: 12px; color: #666; line-height: 1.8;">
+        <p style="margin-bottom: 8px;"><strong>1.</strong> 充值手机号须与易捷注册号一致且本人实名（192号段/虚拟号不可注册）。</p>
+        <p style="margin-bottom: 8px;"><strong>2.</strong> 限全国中石化自营站汽油使用。</p>
+        <p style="margin-bottom: 8px;"><strong>3.</strong> 每月每面值限4张，月累计上限16张。</p>
+        <p style="margin-bottom: 8px;"><strong>4.</strong> 有效期180天，过期作废。</p>
+        <p style="margin-bottom: 0;"><strong>5.</strong> 订单金额须≥券面金额，不足仍按券面全额核销，差价不退。</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="yj-toast" id="toast"></div>
+
+  <script>
+    // Toast提示
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      
+      if (type === 'error') {
+        toast.style.background = 'rgba(229, 57, 53, 0.9)';
+      } else if (type === 'success') {
+        toast.style.background = 'rgba(76, 175, 80, 0.9)';
+      } else {
+        toast.style.background = 'rgba(0,0,0,0.85)';
+      }
+      
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2000);
+    }
+    
+    // 显示状态
+    function showStatus(type, text) {
+      const indicator = document.getElementById('statusIndicator');
+      const spinner = document.getElementById('statusSpinner');
+      const statusText = document.getElementById('statusText');
+      
+      indicator.style.display = 'flex';
+      indicator.className = 'yj-status ' + type;
+      statusText.textContent = text;
+      spinner.style.display = type === 'pending' ? 'block' : 'none';
+    }
+    
+    // 领取代金券
+    function claimVoucher() {
+      const phone = document.getElementById('phone').value.trim();
+      const referrer = document.getElementById('referrerCode').value.trim();
+      const btn = document.getElementById('claimBtn');
+      
+      // 验证手机号
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        showToast('请输入有效的11位手机号码', 'error');
+        document.getElementById('phone').focus();
+        return;
+      }
+      
+      // 保存会话
+      localStorage.setItem('ej_phone', phone);
+      localStorage.setItem('ej_referrer', referrer);
+      
+      // 显示加载状态
+      btn.disabled = true;
+      btn.innerHTML = '正在查询...';
+      showStatus('pending', '正在查询...');
+      
+      // 模拟查询
+      setTimeout(() => {
+        // 生成纯数字券码
+        const voucherCode = 'O' + Date.now().toString().slice(-10) + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        
+        // 保存券码
+        localStorage.setItem('ej_voucher', voucherCode);
+        localStorage.setItem('ej_phone', phone);
+        localStorage.setItem('ej_referrer', referrer);
+        
+        // 显示成功状态
+        showStatus('success', '领取成功：' + voucherCode);
+      
+        // 隐藏按钮
+        btn.style.display = 'none';
+        document.getElementById('referrerCode').style.display = 'none';
+        document.querySelector('.yj-input-group').style.display = 'none';
+      
+        showToast('代金券领取成功！即将跳转...', 'success');
+      
+        // 显示跳转按钮
+        document.getElementById('nextBtn').style.display = 'block';
+      
+        // 2秒后跳转到充值页
+        setTimeout(() => {
+          window.location.href = 'recharge.html';
+        }, 2000);
+      }, 1500);
+    }
+    
+    // 跳转到充值页面
+    function goToRecharge() {
+      const phone = localStorage.getItem('ej_phone');
+      const voucher = localStorage.getItem('ej_voucher');
+      
+      if (!phone || !voucher) {
+        showToast('请先领取代金券', 'error');
+        return;
+      }
+      
+      window.location.href = 'recharge.html';
+    }
+    
+    // 初始化
+    function init() {
+      const savedPhone = localStorage.getItem('ej_phone');
+      const savedReferrer = localStorage.getItem('ej_referrer');
+      const savedVoucher = localStorage.getItem('ej_voucher');
+      
+      if (savedPhone) {
+        document.getElementById('phone').value = savedPhone;
+        document.getElementById('referrerCode').value = savedReferrer || '';
+        
+        if (savedVoucher) {
+          showStatus('success', '已领取代金券：' + savedVoucher);
+        }
+      }
+    }
+    
+    // 页面加载时初始化
+    window.onload = init;
+  </script>
+<!-- 底部备案信息 -->
+  <div style="text-align: center; padding: 12px 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; color: #999; line-height: 1.6; border-top: 1px solid #eee; background-color: #fafafa;">
+    <p style="margin: 0 0 2px 0;">
+      <a href="http://www.sinopecgroup.com" target="_blank" style="color: #666; text-decoration: none;">京ICP备2020037595号-1</a>
+    </p>
+    <p style="margin: 0; color: #bbb;">主办单位：中石化易捷销售有限公司 | 地址：北京市朝阳区朝阳门北大街22号 | </p>
+    <p style="margin: 2px 0 0 0; color: #ccc;">© 2026 Sinopec Easy Joy. All Rights Reserved.</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>充值 - 易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F7F8FA;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 顶部导航 */
+    .cj-header {
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      padding: 12px 14px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    .cj-back {
+      font-size: 22px;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+    
+    .cj-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .cj-placeholder {
+      width: 32px;
+    }
+    
+    /* 内容区域 */
+    .cj-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .cj-content::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    
+    /* 卡片 */
+    .cj-card {
+      background: white;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .cj-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #F5F5F5;
+    }
+    
+    .cj-card-title .dot {
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #E53935 0%, #FF6B6B 100%);
+    }
+    
+    /* 金额网格 */
+    .cj-amount-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .cj-amount-card {
+      background: #F8F9FA;
+      border: 2px solid #EEEEEE;
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .cj-amount-card:hover {
+      border-color: #E53935;
+    }
+    
+    .cj-amount-card.selected {
+      border-color: #E53935;
+      background: linear-gradient(135deg, #E53935 0%, #FF6B6B 100%);
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.25);
+    }
+    
+    .cj-amount-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #E53935;
+      margin-bottom: 2px;
+    }
+    
+    .cj-amount-card.selected .cj-amount-value {
+      color: white;
+    }
+    
+    .cj-amount-discount {
+      font-size: 11px;
+      color: #888;
+    }
+    
+    .cj-amount-card.selected .cj-amount-discount {
+      color: rgba(255,255,255,0.9);
+    }
+    
+    .cj-amount-discount span {
+      color: #FF9800;
+      font-weight: 600;
+    }
+    
+    .cj-amount-card.selected .cj-amount-discount span {
+      color: #FFE082;
+    }
+    
+    /* 信息行 */
+    .cj-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #F8F8F8;
+      font-size: 12px;
+    }
+    
+    .cj-info-row:last-child {
+      border-bottom: none;
+    }
+    
+    .cj-info-label {
+      color: #999;
+      font-weight: 500;
+    }
+    
+    .cj-info-value {
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .cj-info-value.highlight {
+      color: #E53935;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    
+    .cj-info-value.total {
+      color: #E53935;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    
+    /* 输入框 */
+    .cj-input {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      border: 1.5px solid #E8E8E8;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #333;
+      background: #FAFAFA;
+      transition: all 0.2s;
+      outline: none;
+    }
+    
+    .cj-input:focus {
+      border-color: #E53935;
+      background: white;
+    }
+    
+    .cj-input::placeholder {
+      color: #BBB;
+    }
+    
+    /* 支付方式 */
+    .cj-payment-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .cj-payment-tab {
+      flex: 1;
+      height: 40px;
+      border: 1.5px solid #E8E8E8;
+      border-radius: 8px;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    
+    .cj-payment-tab:active {
+      transform: scale(0.96);
+    }
+    
+    .cj-payment-tab.active {
+      border-color: #07C160;
+      background: #E8F5E9;
+      color: #07C160;
+    }
+    
+    .cj-payment-tab.active.alipay {
+      border-color: #1677FF;
+      background: #E6F4FF;
+      color: #1677FF;
+    }
+    
+    .payment-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 微信logo */
+    .wx-icon {
+      color: #07C160;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    /* 支付宝logo */
+    .ali-icon {
+      color: #1677FF;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    /* 提交按钮 */
+    .cj-submit-area {
+      padding: 10px;
+      flex-shrink: 0;
+    }
+    
+    .cj-submit-btn {
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+      transition: all 0.2s;
+    }
+    
+    .cj-submit-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    
+    .cj-submit-btn:disabled {
+      background: #9E9E9E;
+      cursor: not-allowed;
+    }
+    
+    /* 底部备案 */
+    .cj-footer {
+      text-align: center;
+      padding: 8px 12px 10px;
+      font-size: 10px;
+      color: #999;
+      line-height: 1.5;
+      background: white;
+      border-top: 1px solid #F0F0F0;
+      flex-shrink: 0;
+    }
+    
+    .cj-footer a {
+      color: #888;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <div class="cj-header">
+    <div class="cj-back" onclick="history.back()">←</div>
+    <div class="cj-title">加油充值</div>
+    <div class="cj-placeholder"></div>
+  </div>
+  
+  <!-- 内容区域 -->
+  <div class="cj-content">
+    <!-- 1. 选择金额 -->
+    <div class="cj-card">
+      <div class="cj-card-title">
+        <span class="dot"></span>
+        选择充值金额
+      </div>
+      
+      <div class="cj-amount-grid">
+        <div class="cj-amount-card" onclick="selectAmount(200, 28)">
+          <div class="cj-amount-value">¥200</div>
+          <div class="cj-amount-discount">立省 <span>¥28</span></div>
+        </div>
+        <div class="cj-amount-card" onclick="selectAmount(300, 58)">
+          <div class="cj-amount-value">¥300</div>
+          <div class="cj-amount-discount">立省 <span>¥58</span></div>
+        </div>
+        <div class="cj-amount-card" onclick="selectAmount(400, 98)">
+          <div class="cj-amount-value">¥400</div>
+          <div class="cj-amount-discount">立省 <span>¥98</span></div>
+        </div>
+        <div class="cj-amount-card" onclick="selectAmount(500, 128)">
+          <div class="cj-amount-value">¥500</div>
+          <div class="cj-amount-discount">立省 <span>¥128</span></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 2. 充值信息 -->
+    <div class="cj-card">
+      <div class="cj-card-title">
+        <span class="dot"></span>
+        订单详情
+      </div>
+      
+      <div class="cj-info-row">
+        <span class="cj-info-label">手机号</span>
+        <span class="cj-info-value" id="phoneDisplay">-</span>
+      </div>
+      
+      <div class="cj-info-row">
+        <span class="cj-info-label">电子券编号</span>
+        <span class="cj-info-value highlight" id="voucherDisplay">-</span>
+      </div>
+      
+      <div class="cj-info-row">
+        <span class="cj-info-label">充值金额</span>
+        <span class="cj-info-value" id="summaryAmount">¥0</span>
+      </div>
+      
+      <div class="cj-info-row">
+        <span class="cj-info-label">代金券优惠</span>
+        <span class="cj-info-value" style="color: #FF9800;" id="summaryDiscount">-¥0</span>
+      </div>
+      
+      <div class="cj-info-row" style="padding-top: 10px;">
+        <span class="cj-info-label" style="font-size: 13px; color: #555;">实付金额</span>
+        <span class="cj-info-value total" id="summaryTotal">¥0</span>
+      </div>
+    </div>
+    
+    <!-- 3. 姓名 -->
+    <div class="cj-card">
+      <div class="cj-card-title">
+        <span class="dot"></span>
+        联系人信息
+      </div>
+      
+      <input type="text" class="cj-input" id="contactName" placeholder="请输入您的姓名" maxlength="20">
+    </div>
+    
+    <!-- 4. 支付方式 -->
+    <div class="cj-card">
+      <div class="cj-card-title">
+        <span class="dot"></span>
+        支付方式
+      </div>
+      
+      <div class="cj-payment-tabs">
+        <button class="cj-payment-tab active" onclick="switchPayment('wechat')">
+          <span>微信支付</span>
+        </button>
+        <button class="cj-payment-tab" onclick="switchPayment('alipay')">
+          <span>支付宝</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 提交按钮 -->
+  <div class="cj-submit-area">
+    <button class="cj-submit-btn" id="submitBtn" onclick="submitOrder()">
+      确认支付
+    </button>
+  </div>
+  
+  <!-- 底部备案 -->
+  <div class="cj-footer">
+    <p style="margin: 0 0 2px 0;">
+      <a href="http://www.sinopecgroup.com" target="_blank">京ICP备2020037595号-1</a>
+    </p>
+    <p style="margin: 0;">主办单位：中石化易捷销售有限公司 | 地址：北京市朝阳区朝阳门北大街22号</p>
+  </div>
+
+  <script>
+    let sessionData = {
+      phone: '',
+      referrer: '',
+      voucher: ''
+    };
+    
+    let selectedAmount = 0;
+    let selectedDiscount = 0;
+    let selectedPayment = 'wechat';
+    
+    function init() {
+      sessionData.phone = localStorage.getItem('ej_phone') || '';
+      sessionData.referrer = localStorage.getItem('ej_referrer') || '-';
+      sessionData.voucher = localStorage.getItem('ej_voucher') || '';
+      
+      document.getElementById('phoneDisplay').textContent = sessionData.phone ? sessionData.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '-';
+      document.getElementById('voucherDisplay').textContent = sessionData.voucher;
+    }
+    
+    function selectAmount(amount, discount) {
+      selectedAmount = amount;
+      selectedDiscount = discount;
+      
+      document.querySelectorAll('.cj-amount-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      event.target.closest('.cj-amount-card').classList.add('selected');
+      
+      document.getElementById('summaryAmount').textContent = '¥' + amount;
+      document.getElementById('summaryDiscount').textContent = '-¥' + discount;
+      document.getElementById('summaryTotal').textContent = '¥' + (amount - discount);
+    }
+    
+    function switchPayment(method) {
+      selectedPayment = method;
+      
+      const tabs = document.querySelectorAll('.cj-payment-tab');
+      tabs.forEach(tab => {
+        tab.classList.remove('active', 'alipay');
+      });
+      
+      if (method === 'wechat') {
+        tabs[0].classList.add('active');
+      } else {
+        tabs[1].classList.add('active', 'alipay');
+      }
+    }
+    
+    function generateOrderNo() {
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+      return 'ORD' + timestamp + random;
+    }
+    
+    function submitOrder() {
+      const contactName = document.getElementById('contactName').value.trim();
+      
+      if (!contactName) {
+        alert('请填写联系人姓名');
+        document.getElementById('contactName').focus();
+        return;
+      }
+      
+      if (selectedAmount === 0) {
+        alert('请选择充值金额');
+        return;
+      }
+      
+      const orderNo = generateOrderNo();
+      
+      const orderData = {
+        orderNo: orderNo,
+        phone: sessionData.phone,
+        referrer: sessionData.referrer,
+        contactName: contactName,
+        voucher: sessionData.voucher,
+        amount: selectedAmount,
+        discount: selectedDiscount,
+        payAmount: selectedAmount - selectedDiscount,
+        paymentMethod: selectedPayment === 'wechat' ? '微信支付' : '支付宝',
+        status: 'pending',
+        createdAt: new Date().toLocaleString()
+      };
+      
+      localStorage.setItem('ej_last_order', JSON.stringify(orderData));
+      
+      window.location.href = 'qr-pay.html';
+    }
+    
+    window.onload = init;
+  </script>
+</body>
+</html>

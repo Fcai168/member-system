@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>在线客服 - 易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F5F5F5;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 顶部导航 */
+    .cj-header {
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      padding: 12px 16px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+    }
+    
+    .cj-back {
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    
+    .cj-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .cj-placeholder {
+      width: 30px;
+    }
+    
+    /* 聊天区域 */
+    .cj-chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .cj-chat-area::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    
+    /* 消息气泡 */
+    .cj-message {
+      display: flex;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    
+    .cj-message.bot {
+      justify-content: flex-start;
+    }
+    
+    .cj-message.user {
+      justify-content: flex-end;
+    }
+    
+    .cj-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+    
+    .cj-message.user .cj-avatar {
+      margin-right: 0;
+      margin-left: 10px;
+      order: 2;
+    }
+    
+    .cj-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+    
+    .cj-message.bot .cj-bubble {
+      background: white;
+      color: #333;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .cj-message.user .cj-bubble {
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    
+    /* 欢迎消息 */
+    .cj-welcome {
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .cj-welcome-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 12px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+    
+    .cj-welcome-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    
+    .cj-welcome-desc {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    /* 输入区域 */
+    .cj-input-area {
+      padding: 12px;
+      background: white;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    
+    .cj-input {
+      flex: 1;
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 14px;
+      outline: none;
+    }
+    
+    .cj-input:focus {
+      border-color: #E53935;
+    }
+    
+    .cj-send-btn {
+      width: 70px;
+      height: 40px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+    }
+    
+    .cj-send-btn:active {
+      transform: scale(0.95);
+    }
+    
+    /* 底部备案 */
+    .cj-footer {
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: #999;
+      background: white;
+      border-top: 1px solid #eee;
+    }
+    
+    .cj-footer a {
+      color: #666;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <div class="cj-header">
+    <div class="cj-back" onclick="history.back()">←</div>
+    <div class="cj-title">在线客服</div>
+    <div class="cj-placeholder"></div>
+  </div>
+  
+  <!-- 聊天区域 -->
+  <div class="cj-chat-area" id="chatArea">
+    <!-- 欢迎消息 -->
+    <div class="cj-welcome">
+      <div class="cj-welcome-icon">💬</div>
+      <div class="cj-welcome-title">欢迎联系易捷客服</div>
+      <div class="cj-welcome-desc">我们将尽快为您解决问题</div>
+    </div>
+    
+    <!-- 客服消息 -->
+    <div class="cj-message bot">
+      <div class="cj-avatar">👤</div>
+      <div class="cj-bubble">您好！请问有什么可以帮您的？请描述您的问题，客服人员 will 尽快为您解答。</div>
+    </div>
+  </div>
+  
+  <!-- 输入区域 -->
+  <div class="cj-input-area">
+    <input type="text" class="cj-input" id="messageInput" placeholder="请输入您的问题..." maxlength="500">
+    <button class="cj-send-btn" onclick="sendMessage()">发送</button>
+  </div>
+
+  <script>
+    // 聊天记录存储key
+    const CHAT_STORAGE_KEY = 'ej_chat_history';
+    
+    // 获取订单数据
+    const orderData = JSON.parse(localStorage.getItem('ej_last_order') || '{}');
+    const idCard = localStorage.getItem('ej_idcard') || '';
+    
+    // 加载历史记录
+    function loadHistory() {
+      try {
+        const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+        if (history.length > 0) {
+          // 清空欢迎消息和初始消息
+          const chatArea = document.getElementById('chatArea');
+          chatArea.innerHTML = '';
+          
+          // 恢复历史消息
+          history.forEach(msg => {
+            addMessage(msg.text, msg.type, false);
+          });
+        }
+      } catch (e) {
+        console.error('加载历史记录失败:', e);
+      }
+    }
+    
+    // 保存消息到历史
+    function saveHistory(text, type) {
+      try {
+        const history = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || '[]');
+        history.push({
+          text: text,
+          type: type,
+          time: Date.now()
+        });
+        // 只保留最近50条
+        if (history.length > 50) {
+          history.shift();
+        }
+        localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(history));
+      } catch (e) {
+        console.error('保存历史记录失败:', e);
+      }
+    }
+    
+    // 发送消息
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // 添加用户消息
+      addMessage(message, 'user');
+      saveHistory(message, 'user');
+      
+      // 清空输入框
+      input.value = '';
+      
+      // 模拟客服回复
+      setTimeout(() => {
+        const replies = [
+          '感谢您的咨询，客服人员正在处理中...',
+          '您的问题我们已经收到，请稍等...',
+          '我们会尽快为您解决，感谢您的耐心等待。'
+        ];
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        addMessage(randomReply, 'bot');
+        saveHistory(randomReply, 'bot');
+      }, 1000);
+    }
+    
+    // 添加消息
+    function addMessage(text, type, save = true) {
+      const chatArea = document.getElementById('chatArea');
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `cj-message ${type}`;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'cj-avatar';
+      avatar.textContent = type === 'bot' ? '👤' : '😊';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'cj-bubble';
+      bubble.textContent = text;
+      
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(bubble);
+      
+      chatArea.appendChild(messageDiv);
+      
+      // 滚动到底部
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+    
+    // 回车发送
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    
+    // 自动添加订单信息
+    if (orderData.orderNo) {
+      setTimeout(() => {
+        addMessage(`【订单号】${orderData.orderNo}`, 'bot');
+        saveHistory(`【订单号】${orderData.orderNo}`, 'bot');
+      }, 500);
+    }
+    
+    // 页面加载时恢复历史记录
+    window.onload = function() {
+      loadHistory();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      background: #F7F8FA;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 顶部导航 */
+    .header {
+      background: linear-gradient(135deg, #E53935 0%, #C62828 50%, #B71C1C 100%);
+      padding: 10px 16px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 2px 12px rgba(229, 57, 53, 0.3);
+    }
+    
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    /* Logo */
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      flex-shrink: 0;
+    }
+    
+    .logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    
+    .header-link {
+      font-size: 14px;
+      opacity: 0.95;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 6px 10px;
+      border-radius: 14px;
+      font-weight: 600;
+    }
+    
+    .header-link:hover {
+      background: rgba(255,255,255,0.15);
+      opacity: 1;
+    }
+    
+    .header-link:active {
+      transform: scale(0.95);
+    }
+    
+    /* 主内容区 */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px 12px;
+      scroll-behavior: smooth;
+    }
+    
+    .content::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    
+    /* 警示条 */
+    .alert-bar {
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+      border: 1px solid #FFD54F;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: #E65100;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(255, 193, 7, 0.15);
+    }
+    
+    .alert-icon {
+      font-size: 18px;
+      animation: shake 3s infinite;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      10%, 30% { transform: rotate(-10deg); }
+      20%, 40% { transform: rotate(10deg); }
+    }
+    
+    /* 地图卡片 */
+    .map-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    
+    .map-area {
+      width: 100%;
+      height: 175px;
+      background: linear-gradient(160deg, #E8F5E9 0%, #C8E6C9 30%, #A5D6A7 60%, #81C784 100%);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* 地图装饰线条 */
+    .map-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+    
+    .road-h {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      left: 8%;
+      right: 8%;
+      top: 48%;
+      transform: translateY(-50%);
+    }
+    
+    .road-v {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, rgba(255,255,255,0.6), transparent);
+      top: 8%;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .pin {
+      position: absolute;
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .area-label {
+      position: absolute;
+      font-size: 12px;
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      padding: 4px 8px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+    }
+    
+    .map-footer {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+    }
+    
+    /* 快捷服务 */
+    .services-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    
+    .services-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F5F5F5;
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    
+    .service-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      padding: 8px 4px;
+      border-radius: 12px;
+    }
+    
+    .service-item:active {
+      transform: scale(0.95);
+      background: #F5F5F5;
+    }
+    
+    .service-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .service-icon.red { background: linear-gradient(135deg, #FF6B6B 0%, #E53935 100%); }
+    .service-icon.orange { background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%); }
+    .service-icon.blue { background: linear-gradient(135deg, #64B5F6 0%, #2196F3 100%); }
+    .service-icon.green { background: linear-gradient(135deg, #81C784 0%, #4CAF50 100%); }
+    .service-icon.purple { background: linear-gradient(135deg, #BA68C8 0%, #9C27B0 100%); }
+    .service-icon.teal { background: linear-gradient(135deg, #4DB6AC 0%, #009688 100%); }
+    
+    .service-name {
+      font-size: 11px;
+      color: #555;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    /* 底部备案 */
+    .footer-beian {
+      text-align: center;
+      padding: 10px 16px 12px;
+      font-size: 10px;
+      color: #999;
+      background: white;
+      border-top: 1px solid #eee;
+      flex-shrink: 0;
+    }
+    
+    .footer-beian a {
+      color: #666;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-icon">
+        <img src="logo.png" alt="中国石化">
+      </div>
+      <div class="header-title">易捷加油</div>
+    </div>
+    <div class="header-right">
+      <span class="header-link" onclick="location.href='index.html'">首页</span>
+      <span class="header-link">通知</span>
+    </div>
+  </div>
+  
+  <!-- 主内容区 -->
+  <div class="content">
+    <!-- 警示条 -->
+    <div class="alert-bar">
+      <span class="alert-icon">⚠️</span>
+      <span>请在车内操作手机，站内禁止使用手机拍照</span>
+    </div>
+    
+    <!-- 地图区域 -->
+    <div class="map-card">
+      <div class="map-area">
+        <div class="road-h"></div>
+        <div class="road-v"></div>
+        
+        <div class="pin" style="top: 22%; left: 18%;">📍</div>
+        <div class="pin" style="top: 38%; left: 48%; animation-delay: 0.4s;">📍</div>
+        <div class="pin" style="top: 58%; left: 32%; animation-delay: 0.8s;">📍</div>
+        <div class="pin" style="top: 30%; left: 68%; animation-delay: 1.2s;">📍</div>
+        
+        <div class="area-label" style="top: 10%; left: 10%;">白云区</div>
+        <div class="area-label" style="top: 45%; left: 15%;">天河区</div>
+        <div class="area-label" style="bottom: 15%; right: 10%;">海珠区</div>
+        
+        <div class="map-footer">🗺️ 易捷加油站分布</div>
+      </div>
+    </div>
+    
+    <!-- 快捷服务 -->
+    <div class="services-card">
+      <div class="services-title">快捷服务</div>
+      <div class="services-grid">
+        <div class="service-item" onclick="location.href='member.html'">
+          <div class="service-icon red">👤</div>
+          <span class="service-name">权益会员</span>
+        </div>
+        <div class="service-item" onclick="location.href='index.html'">
+          <div class="service-icon orange">🎫</div>
+          <span class="service-name">电子券</span>
+        </div>
+        <div class="service-item">
+          <div class="service-icon blue">⚡</div>
+          <span class="service-name">石化易电</span>
+        </div>
+        <div class="service-item">
+          <div class="service-icon green">💰</div>
+          <span class="service-name">油价查询</span>
+        </div>
+        <div class="service-item" onclick="location.href='index.html'">
+          <div class="service-icon purple">🚗</div>
+          <span class="service-name">加油卡充值</span>
+        </div>
+        <div class="service-item">
+          <div class="service-icon teal">🅿️</div>
+          <span class="service-name">预约加油</span>
+        </div>
+        <div class="service-item">
+          <div class="service-icon red">🛒</div>
+          <span class="service-name">非油商城</span>
+        </div>
+        <div class="service-item">
+          <div class="service-icon orange">📞</div>
+          <span class="service-name">客户服务</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 底部备案信息 -->
+  <div class="footer-beian">
+    <p style="margin: 0 0 2px 0;">
+      <a href="http://www.sinopecgroup.com" target="_blank">京ICP备2020037595号-1</a>
+    </p>
+    <p style="margin: 0;">主办单位：中石化易捷销售有限公司 | 地址：北京市朝阳区朝阳门北大街22号</p>
+  </div>
+  
+  <script>
+    // IP定位并更新地图
+    async function initLocation() {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        
+        const city = data.city || '';
+        const region = data.region || '';
+        
+        // 更新警示条
+        const alertText = document.querySelector('.alert-bar span:last-child');
+        if (alertText) {
+          alertText.textContent = `当前位置：${region || city}，请在车内操作手机`;
+        }
+        
+        // 更新地图标题
+        const mapFooter = document.querySelector('.map-footer');
+        if (mapFooter) {
+          mapFooter.textContent = `🗺️ ${region || city}市 易捷加油站分布`;
+        }
+        
+        // 更新区域标签
+        updateAreaLabels(city);
+        
+      } catch (e) {
+        console.log('IP定位失败，使用默认位置');
+      }
+    }
+    
+    function updateAreaLabels(city) {
+      const cityAreas = {
+        '广州': ['天河区', '白云区', '海珠区'],
+        '北京': ['朝阳区', '海淀区', '丰台区'],
+        '上海': ['浦东新区', '黄浦区', '静安区'],
+        '深圳': ['南山区', '福田区', '罗湖区'],
+        '杭州': ['西湖区', '拱墅区', '滨江区'],
+        '成都': ['锦江区', '青羊区', '武侯区'],
+        '武汉': ['武昌区', '江岸区', '汉阳区'],
+        '西安': ['雁塔区', '碑林区', '莲湖区']
+      };
+      
+      const labels = document.querySelectorAll('.area-label');
+      const areas = cityAreas[city] || ['天河区', '白云区', '海珠区'];
+      
+      labels.forEach((label, index) => {
+        if (areas[index]) {
+          label.textContent = areas[index];
+        }
+      });
+    }
+    
+    // 页面加载时初始化
+    initLocation();
+  </script>
+</body>
+</html>

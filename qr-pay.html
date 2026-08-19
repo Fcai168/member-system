@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>扫码支付 - 易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F5F7FA;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 顶部导航 */
+    .cj-header {
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      padding: 14px 16px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    .cj-back {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    
+    .cj-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .cj-placeholder {
+      width: 36px;
+    }
+    
+    /* 内容区域 */
+    .cj-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .cj-content::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+    
+    /* 卡片 */
+    .cj-card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    
+    .cj-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F5F5F5;
+    }
+    
+    .cj-card-title::before {
+      content: '';
+      width: 4px;
+      height: 16px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #E53935 0%, #FF6B6B 100%);
+    }
+    
+    /* 金额展示 */
+    .cj-amount-display {
+      text-align: center;
+      padding: 10px;
+      background: linear-gradient(135deg, #FFF5F5 0%, #FFE5E5 100%);
+      border-radius: 10px;
+    }
+    
+    .cj-amount-label {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 3px;
+    }
+    
+    .cj-amount-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #E53935;
+    }
+    
+    .cj-amount-value span:first-child {
+      font-size: 14px;
+    }
+    
+    /* 二维码和上传区域 */
+    .cj-payment-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    
+    /* 二维码 */
+    .cj-qr-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .cj-qr-box {
+      width: 140px;
+      height: 140px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      border: 2px dashed #e0e0e0;
+      margin-bottom: 10px;
+    }
+    
+    .cj-qr-tip {
+      text-align: center;
+      font-size: 11px;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .cj-qr-tip strong {
+      color: #E53935;
+      font-weight: 600;
+    }
+    
+    /* 上传凭证 */
+    .cj-upload-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .cj-upload-box {
+      width: 130px;
+      height: 130px;
+      border: 2px dashed #e0e0e0;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fafafa;
+    }
+    
+    .cj-upload-box:hover {
+      border-color: #E53935;
+      background: #fff5f5;
+    }
+    
+    .cj-upload-icon {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+    
+    .cj-upload-text {
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .cj-upload-hint {
+      font-size: 10px;
+      color: #999;
+      margin-top: 2px;
+    }
+    
+    .cj-upload-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      display: none;
+    }
+    
+    /* 订单信息 */
+    .cj-order-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .cj-order-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 12px;
+    }
+    
+    .cj-order-row:last-child {
+      border-bottom: none;
+    }
+    
+    .cj-order-label {
+      color: #999;
+    }
+    
+    .cj-order-value {
+      color: #333;
+      font-weight: 600;
+    }
+    
+    /* 提交按钮 */
+    .cj-submit-area {
+      padding: 12px;
+      flex-shrink: 0;
+    }
+    
+    .cj-submit-btn {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(229, 57, 53, 0.3);
+    }
+    
+    .cj-submit-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+    
+    .cj-submit-btn:disabled {
+      background: #9e9e9e;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    /* 底部备案 */
+    .cj-footer {
+      text-align: center;
+      padding: 10px 16px 12px;
+      font-size: 10px;
+      color: #999;
+      line-height: 1.5;
+      background: white;
+      border-top: 1px solid #f0f0f0;
+      flex-shrink: 0;
+    }
+    
+    .cj-footer a {
+      color: #888;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <div class="cj-header">
+    <div class="cj-back" onclick="history.back()">←</div>
+    <div class="cj-title">扫码支付</div>
+    <div class="cj-placeholder"></div>
+  </div>
+  
+  <!-- 内容区域 -->
+  <div class="cj-content">
+    <!-- 金额展示 -->
+    <div class="cj-card">
+      <div class="cj-card-title">支付金额</div>
+      <div class="cj-amount-display">
+        <div class="cj-amount-label">实付金额</div>
+        <div class="cj-amount-value"><span>¥</span><span id="payAmount">0</span></div>
+      </div>
+    </div>
+    
+    <!-- 二维码和上传 -->
+    <div class="cj-card">
+      <div class="cj-card-title">扫码支付</div>
+      <div class="cj-payment-area">
+        <!-- 上方：二维码 -->
+        <div class="cj-qr-section">
+          <div class="cj-qr-box" id="qrCode">
+            📱
+          </div>
+          <div class="cj-qr-tip">
+            请使用<span id="paymentName">微信</span>扫一扫<br>
+            扫描上方二维码完成支付
+          </div>
+        </div>
+        
+        <!-- 下方：上传凭证 -->
+        <div class="cj-upload-section">
+          <div class="cj-upload-box" onclick="document.getElementById('paymentProof').click()">
+            <div class="cj-upload-icon">📷</div>
+            <div class="cj-upload-text">上传支付截图</div>
+            <div class="cj-upload-hint">点击上传图片</div>
+            <img id="previewImg" class="cj-upload-preview" alt="凭证预览">
+          </div>
+          <input type="file" id="paymentProof" accept="image/*" style="display: none;" onchange="previewImage(event)">
+        </div>
+      </div>
+    </div>
+    
+    <!-- 订单信息 -->
+    <div class="cj-card">
+      <div class="cj-card-title">订单信息</div>
+      <div class="cj-order-info">
+        <div class="cj-order-row">
+          <span class="cj-order-label">订单编号</span>
+          <span class="cj-order-value" id="orderNo">-</span>
+        </div>
+        <div class="cj-order-row">
+          <span class="cj-order-label">充值手机</span>
+          <span class="cj-order-value" id="phoneDisplay">-</span>
+        </div>
+        <div class="cj-order-row">
+          <span class="cj-order-label">支付方式</span>
+          <span class="cj-order-value" id="paymentMethod">微信支付</span>
+        </div>
+        <div class="cj-order-row">
+          <span class="cj-order-label">下单时间</span>
+          <span class="cj-order-value" id="createTime">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 提交按钮 -->
+  <div class="cj-submit-area">
+    <button class="cj-submit-btn" id="submitBtn" onclick="submitPayment()">
+      确认充值
+    </button>
+  </div>
+  
+  <!-- 底部备案 -->
+  <div class="cj-footer">
+    <p style="margin: 0 0 2px 0;">
+      <a href="http://www.sinopecgroup.com" target="_blank">京ICP备2020037595号-1</a>
+    </p>
+    <p style="margin: 0;">主办单位：中石化易捷销售有限公司 | 地址：北京市朝阳区朝阳门北大街22号</p>
+  </div>
+
+  <script>
+    // 获取订单数据
+    const orderData = JSON.parse(localStorage.getItem('ej_last_order') || '{}');
+    
+    // 初始化页面
+    function init() {
+      if (orderData.payAmount) {
+        document.getElementById('payAmount').textContent = orderData.payAmount;
+      }
+      if (orderData.orderNo) {
+        document.getElementById('orderNo').textContent = orderData.orderNo;
+      }
+      if (orderData.phone) {
+        document.getElementById('phoneDisplay').textContent = orderData.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+      }
+      if (orderData.paymentMethod) {
+        document.getElementById('paymentMethod').textContent = orderData.paymentMethod;
+        document.getElementById('paymentName').textContent = orderData.paymentMethod === '微信支付' ? '微信' : '支付宝';
+      }
+      if (orderData.createdAt) {
+        document.getElementById('createTime').textContent = orderData.createdAt;
+      }
+    }
+    
+    // 预览图片
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById('previewImg');
+          img.src = e.target.result;
+          img.style.display = 'block';
+          // 隐藏上传提示
+          const uploadBox = document.querySelector('.cj-upload-box');
+          uploadBox.querySelector('.cj-upload-icon').style.display = 'none';
+          uploadBox.querySelector('.cj-upload-text').style.display = 'none';
+          uploadBox.querySelector('.cj-upload-hint').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    // 提交支付
+    function submitPayment() {
+      const proofInput = document.getElementById('paymentProof');
+      if (!proofInput.files.length) {
+        alert('请先上传支付凭证截图');
+        return;
+      }
+      
+      // 保存到localStorage
+      const proofBase64 = document.getElementById('previewImg').src;
+      orderData.paymentProof = proofBase64;
+      orderData.status = 'pending';
+      localStorage.setItem('ej_last_order', JSON.stringify(orderData));
+      
+      // 跳转到充值处理页面
+      window.location.href = 'charging.html';
+    }
+    
+    // 页面加载时初始化
+    window.onload = init;
+  </script>
+</body>
+</html>

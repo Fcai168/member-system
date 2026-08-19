@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>后台管理 - 易捷加油</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F5F7FA;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    /* Header */
+    .admin-header {
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      padding: 12px 16px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(229, 57, 53, 0.3);
+    }
+    
+    .admin-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    
+    .admin-logout {
+      font-size: 13px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      cursor: pointer;
+      border: none;
+      color: white;
+      transition: background 0.2s;
+    }
+    
+    .admin-logout:hover { background: rgba(255,255,255,0.3); }
+    
+    /* Main content */
+    .admin-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 12px;
+      gap: 12px;
+    }
+    
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 12px 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #E53935;
+      margin-bottom: 2px;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: #999;
+    }
+    
+    /* Menu grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    
+    .menu-btn {
+      background: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 0.2s;
+    }
+    
+    .menu-btn:active {
+      transform: scale(0.96);
+      background: #FFF5F5;
+    }
+    
+    .menu-icon {
+      font-size: 28px;
+    }
+    
+    .menu-label {
+      font-size: 12px;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    /* Panel overlay */
+    .panel-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .panel-overlay.active {
+      display: flex;
+    }
+    
+    .panel-content {
+      background: white;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      padding: 16px;
+      border-bottom: 1px solid #F0F0F0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+    }
+    
+    .panel-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #F5F5F5;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    /* Form styles */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    
+    .form-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #E53935;
+    }
+    
+    .save-btn {
+      width: 100%;
+      height: 44px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Table styles */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    .data-table th {
+      background: #F5F5F5;
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 600;
+      color: #666;
+    }
+    
+    .data-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #F0F0F0;
+    }
+    
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .data-table tr:hover td {
+      background: #FFF5F5;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .tag-processing { background: #FFF3E0; color: #E65100; }
+    .tag-completed { background: #E8F5E9; color: #2E7D32; }
+    .tag-failed { background: #FFEBEE; color: #C62828; }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+    
+    .empty-state .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+    
+    .search-bar {
+      margin-bottom: 12px;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    
+    .search-bar input:focus {
+      outline: none;
+      border-color: #E53935;
+    }
+    
+    /* Footer */
+    .admin-footer {
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 10px;
+      color: #bbb;
+      background: white;
+      border-top: 1px solid #F0F0F0;
+      flex-shrink: 0;
+    }
+    
+    .admin-footer a {
+      color: #999;
+      text-decoration: none;
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 9999;
+      display: none;
+    }
+    
+    /* Proof image viewer */
+    .proof-container {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .proof-header {
+      padding: 16px;
+      border-bottom: 1px solid #F0F0F0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .proof-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+    }
+    
+    .proof-image {
+      width: 100%;
+      flex: 1;
+      object-fit: contain;
+      background: #f5f5f5;
+    }
+    
+    .proof-actions {
+      padding: 16px;
+      border-top: 1px solid #F0F0F0;
+    }
+    
+    .proof-btn {
+      width: 100%;
+      height: 44px;
+      background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .view-proof-btn {
+      padding: 4px 10px;
+      background: #FFF5F5;
+      border: 1px solid #E53935;
+      border-radius: 6px;
+      color: #E53935;
+      font-size: 11px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="admin-header">
+    <div class="admin-title">后台管理</div>
+    <button class="admin-logout" onclick="handleLogout()">退出</button>
+  </div>
+  
+  <!-- Main content -->
+  <div class="admin-body">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="statOrders">0</div>
+        <div class="stat-label">总订单</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statSales">¥0</div>
+        <div class="stat-label">销售额</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statUsers">0</div>
+        <div class="stat-label">用户</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statRate">0%</div>
+        <div class="stat-label">成功率</div>
+      </div>
+    </div>
+    
+    <!-- Menu -->
+    <div class="menu-grid">
+      <button class="menu-btn" onclick="showOrders()">
+        <span class="menu-icon">📋</span>
+        <span class="menu-label">订单管理</span>
+      </button>
+      <button class="menu-btn" onclick="showCoupons()">
+        <span class="menu-icon">🎫</span>
+        <span class="menu-label">优惠券</span>
+      </button>
+      <button class="menu-btn" onclick="window.location.href='customer-chat.html'">
+        <span class="menu-icon">💬</span>
+        <span class="menu-label">在线客服</span>
+      </button>
+      <button class="menu-btn" onclick="showSettings()">
+        <span class="menu-icon">⚙️</span>
+        <span class="menu-label">系统设置</span>
+      </button>
+      <button class="menu-btn" onclick="showQRCode()">
+        <span class="menu-icon">📱</span>
+        <span class="menu-label">收款码</span>
+      </button>
+      <button class="menu-btn" onclick="showService()">
+        <span class="menu-icon">🎧</span>
+        <span class="menu-label">客服设置</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Panel overlay -->
+  <div class="panel-overlay" id="panelOverlay" onclick="closePanel(event)">
+    <div class="panel-content" onclick="event.stopPropagation()">
+      <div class="panel-header">
+        <div class="panel-title" id="panelTitle">管理</div>
+        <button class="panel-close" onclick="closePanel()">✕</button>
+      </div>
+      <div class="panel-body" id="panelBody"></div>
+    </div>
+  </div>
+  
+  <!-- Payment proof overlay -->
+  <div class="panel-overlay" id="proofOverlay" onclick="closeProof(event)">
+    <div class="proof-container">
+      <div class="proof-header">
+        <span class="proof-title">📸 支付凭证</span>
+        <button class="panel-close" onclick="closeProof()">✕</button>
+      </div>
+      <img id="proofImage" src="" alt="支付凭证" class="proof-image">
+      <div class="proof-actions">
+        <button class="proof-btn" onclick="downloadProof()">💾 保存凭证</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <div class="admin-footer">
+    <p><a href="http://www.sinopecgroup.com" target="_blank">京ICP备2020037595号-1</a></p>
+    <p>主办单位：中石化易捷销售有限公司 | 地址：北京市朝阳区朝阳门北大街22号</p>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Check login
+    if (sessionStorage.getItem('isAdmin') !== 'true') {
+      window.location.href = 'admin-login.html';
+    }
+    
+    let ordersData = [];
+    let couponsData = [];
+    
+    // Toast
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      if (type === 'error') toast.style.background = 'rgba(229, 57, 53, 0.9)';
+      else if (type === 'success') toast.style.background = 'rgba(76, 175, 80, 0.9)';
+      else toast.style.background = 'rgba(0,0,0,0.85)';
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+    
+    // Logout
+    function handleLogout() {
+      if (confirm('确定要退出登录吗？')) {
+        sessionStorage.removeItem('isAdmin');
+        window.location.href = 'admin-login.html';
+      }
+    }
+    
+    // Show orders
+    function showOrders() {
+      document.getElementById('panelTitle').textContent = '📋 订单管理';
+      const body = document.getElementById('panelBody');
+      
+      if (ordersData.length === 0) {
+        body.innerHTML = '<div class="empty-state"><div class="icon">📭</div><div>暂无订单数据</div></div>';
+      } else {
+        body.innerHTML = `
+          <div class="search-bar">
+            <input type="text" placeholder="搜索订单..." oninput="filterOrders(this.value)">
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>手机号</th>
+                <th>金额</th>
+                <th>凭证</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              ${ordersData.map(o => `
+                <tr>
+                  <td style="font-size:11px;">${o.order_no}</td>
+                  <td>${maskPhone(o.phone)}</td>
+                  <td>¥${o.pay_amount}</td>
+                  <td>
+                    ${o.payment_proof ? 
+                      `<button class="view-proof-btn" onclick="viewProof('${o.id}')">查看</button>` : 
+                      '<span style="color:#ccc;">-</span>'}
+                  </td>
+                  <td><span class="tag tag-${o.status}">${getStatusText(o.status)}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+      
+      document.getElementById('panelOverlay').classList.add('active');
+    }
+    
+    // View payment proof
+    function viewProof(orderId) {
+      const order = ordersData.find(o => o.id === orderId);
+      if (!order || !order.payment_proof) {
+        showToast('暂无支付凭证', 'error');
+        return;
+      }
+      
+      // 创建图片查看弹窗
+      const overlay = document.getElementById('proofOverlay');
+      const img = document.getElementById('proofImage');
+      img.src = order.payment_proof;
+      overlay.classList.add('active');
+    }
+    
+    // Show coupons
+    function showCoupons() {
+      document.getElementById('panelTitle').textContent = '🎫 优惠券管理';
+      const body = document.getElementById('panelBody');
+      
+      if (couponsData.length === 0) {
+        body.innerHTML = '<div class="empty-state"><div class="icon">🎫</div><div>暂无优惠券数据</div></div>';
+      } else {
+        body.innerHTML = `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>券码</th>
+                <th>手机号</th>
+                <th>金额</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${couponsData.map(c => `
+                <tr>
+                  <td style="font-size:11px;">${c.code}</td>
+                  <td>${maskPhone(c.phone)}</td>
+                  <td>¥${c.amount}</td>
+                  <td><span class="tag tag-${c.status}">${getStatusText(c.status)}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+      
+      document.getElementById('panelOverlay').classList.add('active');
+    }
+    
+    // Show settings
+    function showSettings() {
+      document.getElementById('panelTitle').textContent = '⚙️ 系统设置';
+      const body = document.getElementById('panelBody');
+      
+      body.innerHTML = `
+        <div class="form-group">
+          <label class="form-label">Banner 横幅文字</label>
+          <input type="text" class="form-input" id="bannerText" placeholder="请输入Banner文字">
+        </div>
+        <div class="form-group">
+          <label class="form-label">公告文字</label>
+          <input type="text" class="form-input" id="announcementText" placeholder="请输入公告文字">
+        </div>
+        <div class="form-group">
+          <label class="form-label">修改管理员密码</label>
+          <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码（留空不修改）">
+        </div>
+        <button class="save-btn" onclick="saveSettings()">💾 保存设置</button>
+      `;
+      
+      document.getElementById('panelOverlay').classList.add('active');
+    }
+    
+    // Show QR code
+    function showQRCode() {
+      document.getElementById('panelTitle').textContent = '📱 收款码设置';
+      const body = document.getElementById('panelBody');
+      
+      body.innerHTML = `
+        <div class="form-group">
+          <label class="form-label">微信收款码</label>
+          <input type="file" class="form-input" accept="image/*" id="wechatQrInput" onchange="previewQR(this, 'wechatQrPreview')">
+          <img id="wechatQrPreview" style="width:100%;margin-top:10px;display:none;border-radius:8px;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">支付宝收款码</label>
+          <input type="file" class="form-input" accept="image/*" id="alipayQrInput" onchange="previewQR(this, 'alipayQrPreview')">
+          <img id="alipayQrPreview" style="width:100%;margin-top:10px;display:none;border-radius:8px;">
+        </div>
+        <button class="save-btn" onclick="saveQRCode()">💾 保存收款码</button>
+      `;
+      
+      document.getElementById('panelOverlay').classList.add('active');
+    }
+    
+    // Show service
+    function showService() {
+      document.getElementById('panelTitle').textContent = '🎧 客服设置';
+      const body = document.getElementById('panelBody');
+      
+      body.innerHTML = `
+        <div class="form-group">
+          <label class="form-label">客服链接地址</label>
+          <input type="url" class="form-input" id="serviceUrl" placeholder="https://...">
+        </div>
+        <button class="save-btn" onclick="saveService()">💾 保存设置</button>
+      `;
+      
+      document.getElementById('panelOverlay').classList.add('active');
+    }
+    
+    // Close panel
+    function closePanel(e) {
+      if (!e || e.target === document.getElementById('panelOverlay')) {
+        document.getElementById('panelOverlay').classList.remove('active');
+      }
+    }
+    
+    // Close proof viewer
+    function closeProof(e) {
+      if (!e || e.target === document.getElementById('proofOverlay')) {
+        document.getElementById('proofOverlay').classList.remove('active');
+      }
+    }
+    
+    // Download proof
+    function downloadProof() {
+      const img = document.getElementById('proofImage');
+      const link = document.createElement('a');
+      link.href = img.src;
+      link.download = 'payment-proof-' + Date.now() + '.png';
+      link.click();
+      showToast('已保存凭证', 'success');
+    }
+    
+    // Filter orders
+    function filterOrders(keyword) {
+      const filtered = ordersData.filter(o => 
+        o.order_no.includes(keyword) || 
+        o.phone.includes(keyword) ||
+        (o.referrer_code && o.referrer_code.includes(keyword))
+      );
+      
+      const tbody = document.getElementById('ordersTableBody');
+      if (tbody) {
+        tbody.innerHTML = filtered.map(o => `
+          <tr>
+            <td style="font-size:11px;">${o.order_no}</td>
+            <td>${maskPhone(o.phone)}</td>
+            <td>¥${o.pay_amount}</td>
+            <td><span class="tag tag-${o.status}">${getStatusText(o.status)}</span></td>
+          </tr>
+        `).join('');
+      }
+    }
+    
+    // Preview QR code
+    function previewQR(input, previewId) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById(previewId);
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    // Save settings
+    function saveSettings() {
+      const banner = document.getElementById('bannerText').value.trim();
+      const announcement = document.getElementById('announcementText').value.trim();
+      const newPassword = document.getElementById('newPassword').value.trim();
+      
+      // 模拟保存成功
+      showToast('保存成功', 'success');
+      closePanel();
+    }
+    
+    // Save QR code
+    function saveQRCode() {
+      showToast('保存成功', 'success');
+      closePanel();
+    }
+    
+    // Save service
+    function saveService() {
+      const url = document.getElementById('serviceUrl').value.trim();
+      if (url) {
+        showToast('保存成功', 'success');
+        closePanel();
+      } else {
+        showToast('请输入客服链接', 'error');
+      }
+    }
+    
+    // Helper: mask phone
+    function maskPhone(phone) {
+      if (!phone || phone.length !== 11) return phone || '';
+      return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+    }
+    
+    // Helper: status text
+    function getStatusText(status) {
+      const map = { processing: '处理中', completed: '已完成', failed: '失败' };
+      return map[status] || status;
+    }
+    
+    // Initialize with mock data
+    function init() {
+      // 模拟订单数据（包含支付凭证）
+      ordersData = [
+        { 
+          id: '1', 
+          order_no: 'ORD20260819001', 
+          phone: '13800138000', 
+          pay_amount: 242, 
+          status: 'completed',
+          payment_proof: 'images/proof-demo.svg'
+        },
+        { 
+          id: '2', 
+          order_no: 'ORD20260819002', 
+          phone: '13900139000', 
+          pay_amount: 300, 
+          status: 'processing',
+          payment_proof: ''
+        },
+        { 
+          id: '3', 
+          order_no: 'ORD20260819003', 
+          phone: '13700137000', 
+          pay_amount: 196, 
+          status: 'failed',
+          payment_proof: 'images/proof-alipay.svg'
+        }
+      ];
+      
+      // 模拟优惠券数据
+      couponsData = [
+        { id: '1', code: 'OC-ABC123', phone: '13800138000', amount: 50, status: 'used' },
+        { id: '2', code: 'OC-DEF456', phone: '13900139000', amount: 30, status: 'active' }
+      ];
+      
+      // 更新统计
+      document.getElementById('statOrders').textContent = ordersData.length;
+      document.getElementById('statSales').textContent = '¥' + ordersData.reduce((sum, o) => sum + parseFloat(o.pay_amount), 0).toFixed(0);
+      document.getElementById('statUsers').textContent = new Set(ordersData.map(o => o.phone)).size;
+      const completed = ordersData.filter(o => o.status === 'completed').length;
+      document.getElementById('statRate').textContent = Math.round((completed / ordersData.length) * 100) + '%';
+    }
+    
+    // Page load
+    window.onload = init;
+  </script>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>会员中心 - 易捷加油</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 顶部导航 */
+        .top-nav {
+            background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+            flex-shrink: 0;
+        }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .nav-right {
+            font-size: 13px;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 12px;
+        }
+        
+        /* 会员头部卡片 */
+        .member-header {
+            background: linear-gradient(135deg, #E53935 0%, #FF6F61 100%);
+            padding: 20px 16px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .member-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        
+        .member-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+        
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .member-avatar {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+            flex-shrink: 0;
+        }
+        
+        .member-details {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .member-phone {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+        
+        .member-level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        .member-level-icon {
+            font-size: 12px;
+        }
+        
+        /* 会员统计卡片 */
+        .member-stats {
+            background: white;
+            margin: -16px 12px 10px;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #E53935;
+            margin-bottom: 2px;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .stat-divider {
+            width: 1px;
+            background: #f0f0f0;
+            align-self: stretch;
+        }
+        
+        /* 快捷功能 */
+        .quick-actions {
+            background: white;
+            margin: 0 12px 10px;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-left: 10px;
+            border-left: 3px solid #E53935;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .action-item {
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        
+        .action-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #FFF5F5 0%, #FFE5E5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 6px;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        
+        .action-item:hover .action-icon {
+            background: linear-gradient(135deg, #E53935 0%, #FF6F61 100%);
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.3);
+        }
+        
+        .action-text {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* 订单列表 */
+        .order-section {
+            background: white;
+            margin: 0 12px 10px;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        
+        .order-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .order-item {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .order-item:hover {
+            background: #FFF5F5;
+            box-shadow: 0 2px 6px rgba(229, 57, 53, 0.1);
+        }
+        
+        .order-left {
+            flex: 1;
+        }
+        
+        .order-id {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 2px;
+        }
+        
+        .order-date {
+            font-size: 10px;
+            color: #bbb;
+        }
+        
+        .order-right {
+            text-align: right;
+        }
+        
+        .order-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: #E53935;
+            margin-bottom: 2px;
+        }
+        
+        .order-status {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .order-status.success {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .order-status.pending {
+            background: #FFF3E0;
+            color: #FF9800;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .empty-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 客服联系 */
+        .contact-section {
+            background: white;
+            margin: 0 12px 10px;
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        
+        .contact-item:hover {
+            background: #fff5f5;
+        }
+        
+        .contact-icon {
+            font-size: 18px;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-label {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .contact-value {
+            font-size: 11px;
+            font-weight: 500;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1 class="page-title">会员中心</h1>
+        <span class="nav-right">设置</span>
+    </nav>
+    
+    <!-- 主内容 -->
+    <div class="main-content">
+        <!-- 会员头部 -->
+        <div class="member-header">
+            <div class="member-info">
+                <div class="member-avatar">👤</div>
+                <div class="member-details">
+                    <div class="member-name" id="memberName">会员登录</div>
+                    <div class="member-phone" id="memberPhone">请输入手机号登录</div>
+                    <div class="member-level-badge">
+                        <span class="member-level-icon">🥉</span>
+                        <span id="memberLevel">铜牌会员</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 会员统计 -->
+        <div class="member-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="couponCount">0</div>
+                <div class="stat-label">代金券</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-value" id="orderCount">0</div>
+                <div class="stat-label">订单数</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-value" id="pointsCount">0</div>
+                <div class="stat-label">积分</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-value balance" id="balanceCount">¥0</div>
+                <div class="stat-label">余额</div>
+            </div>
+        </div>
+        
+        <!-- 快捷功能 -->
+        <div class="quick-actions">
+            <h2 class="section-title">快捷功能</h2>
+            <div class="action-grid">
+                <a href="coupon.html" class="action-item">
+                    <div class="action-icon">💳</div>
+                    <div class="action-text">代金券</div>
+                </a>
+                <a href="recharge.html" class="action-item">
+                    <div class="action-icon">⛽</div>
+                    <div class="action-text">立即充值</div>
+                </a>
+                <a href="index.html" class="action-item">
+                    <div class="action-icon">🏠</div>
+                    <div class="action-text">返回首页</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 订单历史 -->
+        <div class="order-section">
+            <h2 class="section-title">最近订单</h2>
+            <div class="order-list" id="orderList">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-text">暂无订单记录</div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    
+        <script>
+        (function() {
+            // 获取用户信息
+            const phone = localStorage.getItem('ej_phone') || '未登录';
+            const maskedPhone = phone.length === 11 
+                ? phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+                : phone;
+            
+            // 更新会员信息
+            document.getElementById('memberName').textContent = phone !== '未登录' ? maskedPhone : '会员登录';
+            document.getElementById('memberPhone').textContent = phone !== '未登录' ? maskedPhone : '请输入手机号登录';
+            
+            // 获取订单数据
+            const orders = JSON.parse(localStorage.getItem('ej_orders') || '[]');
+            const coupons = JSON.parse(localStorage.getItem('ej_coupons') || '[]');
+            
+            // 更新统计数据
+            document.getElementById('orderCount').textContent = orders.length;
+            document.getElementById('couponCount').textContent = coupons.length;
+            document.getElementById('pointsCount').textContent = '0';
+            document.getElementById('balanceCount').textContent = '¥0';
+            
+            // 渲染订单列表
+            const orderList = document.getElementById('orderList');
+            
+            if (orders.length === 0) {
+                orderList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">暂无订单记录</div>
+                    </div>
+                `;
+            } else {
+                orderList.innerHTML = orders.slice(0, 10).map(order => `
+                    <div class="order-item">
+                        <div class="order-left">
+                            <div class="order-id">${order.id}</div>
+                            <div class="order-date">${new Date(order.createdAt).toLocaleDateString('zh-CN')}</div>
+                        </div>
+                        <div class="order-right">
+                            <div class="order-amount">¥${order.amount}</div>
+                            <span class="order-status ${order.status}">
+                                ${order.status === 'success' ? '充值成功' : '待审核'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        })();
+    </script>
+</body>
+</html>
